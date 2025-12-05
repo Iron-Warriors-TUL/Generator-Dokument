@@ -1,0 +1,21 @@
+# Binaries
+*.exe
+
+# LaTeX output
+*.pdf
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Go
+*.sum
+
+# IDE
+.vscode/
+.idea/
+
+# Temp
+temp.*
+document.*
