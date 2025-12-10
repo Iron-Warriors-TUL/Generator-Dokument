@@ -1,0 +1,127 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ragged2e}
+\usepackage{lmodern}
+\usepackage{eso-pic}
+
+% --- 1. CRITICAL: LOAD IFTHEN PACKAGE ---
+\usepackage{ifthen}
+
+% --- 2. MARGINS ---
+\geometry{
+    a4paper,
+    left=35mm,
+    right=10mm,
+    top=55mm,
+    bottom=30mm,
+    headheight=0pt,
+    headsep=0pt
+}
+
+\newcommand{\signature}[2]
+{
+    \begin{minipage}{0.45\textwidth}
+    \centering
+    \vspace{1cm}
+    \dotfill\\[0.2cm]
+    #1\\
+    #2\\
+    \end{minipage}
+}
+
+% --- 3. GENDER LOGIC (ROBUST VERSION) ---
+
+% Initialize gender variable with a default
+\newcommand{\gender}{male}
+
+% The setter simply updates the variable
+\newcommand{\setgender}[1]{\renewcommand{\gender}{#1}}
+
+% Logic: \ifthenelse{\equal{\gender}{female}}{FEMININE}{MASCULINE}
+
+\newcommand{\student}{%
+  \ifthenelse{\equal{\gender}{female}}{studentka}{student}%
+}
+
+\newcommand{\was}{%
+  \ifthenelse{\equal{\gender}{female}}{była}{był}%
+}
+
+\newcommand{\activemem}{%
+  \ifthenelse{\equal{\gender}{female}}{aktywną}{aktywnym}%
+}
+
+\newcommand{\memberOne}{%
+    \ifthenelse{\equal{\gender}{female}}{członkinią}{członkiem}%
+}
+
+\newcommand{\memberTwo}{%
+    \ifthenelse{\equal{\gender}{female}}{członkini}{członek}%
+}
+
+\newcommand{\tookpart}{%
+    \ifthenelse{\equal{\gender}{female}}{brała}{brał}%
+}
+
+\newcommand{\dedicated}{%
+    \ifthenelse{\equal{\gender}{female}}{poświęciła}{poświęcił}%
+}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% --- 4. BACKGROUND LAYOUT ---
+\newcommand\BackgroundStructure{
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=north west] at ([xshift=2mm,yshift=-12mm]current page.north west)
+            {\includegraphics[height=45mm]{media/PLLogo.png}};
+        
+        \node[anchor=north west] at ([xshift=4mm,yshift=-51.5mm]current page.north west)
+            {\includegraphics[width=24mm,height=250mm]{media/BANERLEWO.jpg}};
+        
+        \node[anchor=north west] at ([xshift=4mm,yshift=-262mm]current page.north west)
+            {\includegraphics[width=24mm]{media/IMP.png}};
+        
+        \node[anchor=south east] at ([xshift=-15mm,yshift=8mm]current page.south east)
+            {\includegraphics[width=90mm]{media/INNI.png}};
+    \end{tikzpicture}
+}
+
+\AddToShipoutPictureBG{\BackgroundStructure}
+
+\begin{document}
+
+% --- SETTING GENDER ---
+% We inject the 'gender' variable from the CSV here.
+% The text must be exactly "female" or "male" (no spaces).
+\setgender{\VAR{gender}}
+
+% --- CONTENT ---
+
+\begin{flushright}
+Łódź, dnia \VAR{timestamp} r.
+\end{flushright}
+
+\vspace{10mm}
+
+\begin{center}
+{\Large\bfseries Zaświadczenie}
+\end{center}
+
+\vspace{10mm}
+\justifying
+Niniejszym zaświadczam, że \VAR{name}, indeks: \VAR{index}, \student{} kierunku \VAR{major} \was{} \activemem{} \memberOne{} Studenckiego Koła Naukowego Iron Warriors w semestrze \VAR{semester} \VAR{year}. Jako \memberTwo{} Działu \VAR{department}, \tookpart{} w cotygodniowych zebraniach zespołu, łącznie na prace w zespole \dedicated{} ponad 30 godzin.
+
+\vspace{35mm}
+
+\signature{\VAR{signer_name}}{\VAR{signer_pos}}
+\hfill
+\signature{\VAR{signer_name}}{\VAR{signer_pos}}
+
+\end{document}

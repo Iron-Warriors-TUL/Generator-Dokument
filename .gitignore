@@ -9,8 +9,10 @@
 *.toc
 *.synctex.gz
 
-# Go
-*.sum
+# python
+__pycache__/
+venv/
+*.pyc
 
 # IDE
 .vscode/
@@ -19,3 +21,4 @@
 # Temp
 temp.*
 document.*
+*.csv
