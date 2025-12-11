@@ -7,17 +7,11 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      # Map Data (So you can edit CSVs on your host)
-      - ./students.csv:/app/students.csv
-      - ./signers.csv:/app/signers.csv
-      
-      # Map Templates & Images (So you can design on your host)
-      - ./latex_templates:/app/latex_templates
-      - ./media:/app/media
-      - ./templates:/app/templates
-      
-      # Map Output (So generated PDFs appear on your host)
+      - ./app/latex_templates:/app/latex_templates
+      - ./app/templates:/app/templates
       - ./generated:/app/generated
     environment:
-      - FLASK_APP=app.py
-      - FLASK_DEBUG=1  # Keeps debug mode on
+      - FLASK_APP=run.py
+      - FLASK_DEBUG=1
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}

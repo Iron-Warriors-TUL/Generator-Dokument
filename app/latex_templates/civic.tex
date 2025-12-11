@@ -9,11 +9,12 @@
 \usepackage{ragged2e}
 \usepackage{lmodern}
 \usepackage{eso-pic}
-
-% --- 1. CRITICAL: LOAD IFTHEN PACKAGE ---
 \usepackage{ifthen}
 
-% --- 2. MARGINS ---
+% Load template path for images
+\graphicspath{ {\VAR{template_path}/} }
+
+% Page geometry
 \geometry{
     a4paper,
     left=35mm,
@@ -24,26 +25,21 @@
     headsep=0pt
 }
 
+% Signature Block Definition
 \newcommand{\signature}[2]
 {
-    \begin{minipage}{0.45\textwidth}
+    \begin{minipage}{0.30\textwidth}
     \centering
     \vspace{1cm}
     \dotfill\\[0.2cm]
-    #1\\
-    #2\\
+    \textbf{#1}\\
+    {\footnotesize #2}\\
     \end{minipage}
 }
 
-% --- 3. GENDER LOGIC (ROBUST VERSION) ---
-
-% Initialize gender variable with a default
+% Gender Logic
 \newcommand{\gender}{male}
-
-% The setter simply updates the variable
 \newcommand{\setgender}[1]{\renewcommand{\gender}{#1}}
-
-% Logic: \ifthenelse{\equal{\gender}{female}}{FEMININE}{MASCULINE}
 
 \newcommand{\student}{%
   \ifthenelse{\equal{\gender}{female}}{studentka}{student}%
@@ -62,7 +58,7 @@
 }
 
 \newcommand{\memberTwo}{%
-    \ifthenelse{\equal{\gender}{female}}{członkini}{członek}%
+  \ifthenelse{\equal{\gender}{female}}{członkini}{członek}%
 }
 
 \newcommand{\tookpart}{%
@@ -76,20 +72,41 @@
 \pagestyle{empty}
 \setlength{\parindent}{0pt}
 
-% --- 4. BACKGROUND LAYOUT ---
+% --- BACKGROUND STRUCTURE (LOGOS + FOOTER TEXT) ---
 \newcommand\BackgroundStructure{
     \begin{tikzpicture}[remember picture,overlay]
+        % 1. PŁ Logo (Top Left)
         \node[anchor=north west] at ([xshift=2mm,yshift=-12mm]current page.north west)
             {\includegraphics[height=45mm]{media/PLLogo.png}};
         
+        % 2. Left Sidebar Banner
         \node[anchor=north west] at ([xshift=4mm,yshift=-51.5mm]current page.north west)
             {\includegraphics[width=24mm,height=250mm]{media/BANERLEWO.jpg}};
         
+        % 3. Iron Warriors Logo
+        \node[anchor=north west] at ([xshift=4mm,yshift=-232mm]current page.north west)
+            {\includegraphics[width=24mm]{media/IWLOGO.png}};
+            
+        % 4. IMP Logo
         \node[anchor=north west] at ([xshift=4mm,yshift=-262mm]current page.north west)
             {\includegraphics[width=24mm]{media/IMP.png}};
-        
+            
+        % 5. Partner Logos (Bottom Right)
         \node[anchor=south east] at ([xshift=-15mm,yshift=8mm]current page.south east)
             {\includegraphics[width=90mm]{media/INNI.png}};
+
+        % --- NEW: FOOTER ADDRESS TEXT (Bottom Left) ---
+        \node[anchor=south west, align=left] at ([xshift=38mm,yshift=8mm]current page.south west) 
+        {
+            \fontsize{7}{9}\selectfont \color{black!70} % Small, dark gray font
+            \begin{tabular}{@{}l}
+                ul. Wólczańska 217/221, 93-005 Łódź \\
+                tel. (+48 42) 631 23 64; w1i12@adm.p.lodz.pl \\
+                www.imp.p.lodz.pl \\[1ex] 
+                \textbf{Adres do korespondencji:} \\
+                ul. Żeromskiego 116, 90-924 Łódź
+            \end{tabular}
+        };
     \end{tikzpicture}
 }
 
@@ -97,31 +114,34 @@
 
 \begin{document}
 
-% --- SETTING GENDER ---
-% We inject the 'gender' variable from the CSV here.
-% The text must be exactly "female" or "male" (no spaces).
+% Set gender from Python variable
 \setgender{\VAR{gender}}
 
-% --- CONTENT ---
-
+% Date aligned to right
 \begin{flushright}
 Łódź, dnia \VAR{timestamp} r.
 \end{flushright}
 
 \vspace{10mm}
 
+% Title
 \begin{center}
 {\Large\bfseries Zaświadczenie}
 \end{center}
 
 \vspace{10mm}
 \justifying
-Niniejszym zaświadczam, że \VAR{name}, indeks: \VAR{index}, \student{} kierunku \VAR{major} \was{} \activemem{} \memberOne{} Studenckiego Koła Naukowego Iron Warriors w semestrze \VAR{semester} \VAR{year}. Jako \memberTwo{} Działu \VAR{department}, \tookpart{} w cotygodniowych zebraniach zespołu, łącznie na prace w zespole \dedicated{} ponad 30 godzin.
+Niniejszym zaświadczam, że \VAR{name}, indeks: \VAR{index}, \student{} kierunku \VAR{major} \was{} \activemem{} \memberOne{} Studenckiego Koła Naukowego Iron Warriors w semestrze \VAR{semester} \VAR{year}.
+Jako \memberTwo{} Działu \VAR{department}, \tookpart{} w cotygodniowych zebraniach zespołu, łącznie na prace w zespole \dedicated{} ponad 30 godzin.
 
-\vspace{35mm}
+\vspace{30mm}
 
-\signature{\VAR{signer_name}}{\VAR{signer_pos}}
+% Three Signatures Row
+\noindent
+\signature{\VAR{signer_left_name}}{\VAR{signer_left_role}}%
 \hfill
-\signature{\VAR{signer_name}}{\VAR{signer_pos}}
+\signature{\VAR{signer_mid_name}}{\VAR{signer_mid_role}}%
+\hfill
+\signature{\VAR{signer_right_name}}{\VAR{signer_right_role}}
 
 \end{document}

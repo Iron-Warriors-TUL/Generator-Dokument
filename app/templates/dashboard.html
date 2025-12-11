@@ -39,7 +39,7 @@
 
 <div class="modal fade" id="generateModal" tabindex="-1">
     <div class="modal-dialog">
-        <form action="{{ url_for('generate_custom') }}" method="POST" class="modal-content">
+        <form action="{{ url_for('main.generate_custom') }}" method="POST" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Konfiguracja Wydruku</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -60,24 +60,33 @@
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Podpis Lewy</label>
-                    <select name="signer_left" class="form-select" required>
-                        {% for s in signers %}
-                        <option value="{{ s.id }}">{{ s.name }} ({{ s.role }})</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small">Lewy</label>
+                        <select name="signer_left" class="form-select" required>
+                            {% for s in signers %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Podpis Prawy</label>
-                    <select name="signer_right" class="form-select" required>
-                        {% for s in signers %}
-                        <option value="{{ s.id }}" {% if loop.index==2 %}selected{% endif %}>
-                            {{ s.name }} ({{ s.role }})
-                        </option>
-                        {% endfor %}
-                    </select>
+                    <div class="col-md-4">
+                        <label class="form-label small">Środek</label>
+                        <select name="signer_mid" class="form-select" required>
+                            {% for s in signers %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label small">Prawy</label>
+                        <select name="signer_right" class="form-select" required>
+                            {% for s in signers %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
             </div>
 

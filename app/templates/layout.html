@@ -11,9 +11,10 @@
 
     <nav class="navbar navbar-dark bg-primary mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}">🎓 Iron Warriors Certs</a>
+            <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">🎓 Iron Warriors Certs</a>
+
             {% if current_user.is_authenticated %}
-            <a href="{{ url_for('logout') }}" class="btn btn-light btn-sm">Wyloguj</a>
+            <a href="{{ url_for('main.logout') }}" class="btn btn-light btn-sm">Wyloguj</a>
             {% endif %}
         </div>
     </nav>

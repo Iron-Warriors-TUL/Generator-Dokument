@@ -14,6 +14,8 @@ __pycache__/
 venv/
 *.pyc
 
+*.env
+
 # IDE
 .vscode/
 .idea/
@@ -22,3 +24,4 @@ venv/
 temp.*
 document.*
 *.csv
+*.xlsx
