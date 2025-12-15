@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Zarządzanie Użytkownikami</h2>
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card shadow p-3">
+            <h5>Dodaj Użytkownika</h5>
+            <form method="POST">
+                <div class="mb-2">
+                    <label>Login</label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Hasło</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Dodaj</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow p-3">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Login</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.username }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.delete_user', user_id=u.id) }}" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">Usuń</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,30 +1,34 @@
 from flask import Flask
-from flask_login import LoginManager
-from .models import User
+from app.database import db_session, init_db
+from app.views.auth import auth_bp
+from app.views.dashboard import dashboard_bp
+from app.views.admin import admin_bp
+from app.models import User
+from app.extensions import bcrypt, login_manager
 
 
 def create_app():
     app = Flask(__name__)
+    app.secret_key = "change_this_to_something_really_secret"
 
-    # Keep your secret key
-    app.secret_key = "change_this_to_something_secret"
+    init_db()
 
-    # Initialize Login Manager
-    login_manager = LoginManager()
-    login_manager.login_view = (
-        "main.login"  # Redirects to 'login' function in 'main' blueprint
-    )
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session.remove()
+
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Zaloguj się, aby uzyskać dostęp."
     login_manager.init_app(app)
+
+    bcrypt.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
-        if user_id == "admin":
-            return User(user_id)
-        return None
+        return User.query.get(int(user_id))
 
-    # Register Blueprints
-    from .routes import main
-
-    app.register_blueprint(main)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(admin_bp)
 
     return app

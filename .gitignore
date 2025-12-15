@@ -25,3 +25,7 @@ temp.*
 document.*
 *.csv
 *.xlsx
+
+# Database 
+*.db
+create_user.py

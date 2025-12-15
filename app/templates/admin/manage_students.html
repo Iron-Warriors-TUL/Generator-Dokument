@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Zarządzanie Studentami</h2>
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">Dodaj Studenta</button>
+
+<div class="card shadow">
+    <div class="card-body">
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Imię</th>
+                    <th>Indeks</th>
+                    <th>Kierunek</th>
+                    <th>Semestr</th>
+                    <th>Akcja</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.index }}</td>
+                    <td>{{ s.major }}</td>
+                    <td>{{ s.semester }} {{ s.year }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.delete_student', id=s.id) }}" class="btn btn-outline-danger btn-sm"
+                            onclick="return confirm('Usunąć studenta?')">Usuń</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="addStudentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nowy Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" name="name" class="form-control mb-2" placeholder="Imię i Nazwisko" required>
+                <input type="text" name="index" class="form-control mb-2" placeholder="Nr Indeksu" required>
+                <input type="text" name="major" class="form-control mb-2" placeholder="Kierunek" required>
+                <input type="text" name="department" class="form-control mb-2" placeholder="Wydział (np. IT)" required>
+                <select name="gender" class="form-select mb-2">
+                    <option value="male">Mężczyzna</option>
+                    <option value="female">Kobieta</option>
+                </select>
+                <div class="row">
+                    <div class="col"><input type="text" name="semester" class="form-control"
+                            placeholder="Semestr (np. zimowym)"></div>
+                    <div class="col"><input type="text" name="year" class="form-control"
+                            placeholder="Rok (np. 2024/25)"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
