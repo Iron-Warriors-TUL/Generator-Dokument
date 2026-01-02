@@ -1,3 +1,4 @@
+import logging
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.database import db_session
@@ -5,8 +6,10 @@ from app.models import User, Student, Signer
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# --- USERS ---
+
 @admin_bp.route("/users", methods=["GET", "POST"])
 @login_required
 def manage_users():
@@ -42,18 +45,25 @@ def delete_user(user_id):
     return redirect(url_for("admin.manage_users"))
 
 
-# --- SIGNERS ---
 @admin_bp.route("/signers", methods=["GET", "POST"])
 @login_required
 def manage_signers():
     if request.method == "POST":
+        signer_id = request.form.get("signer_id")
         name = request.form.get("name")
         role = request.form.get("role")
 
-        signer = Signer(name=name, role=role)
-        db_session.add(signer)
+        if signer_id:
+            signer = Signer.query.get(signer_id)
+            if signer:
+                signer.name = name
+                signer.role = role
+        else:
+            signer = Signer(name=name, role=role)
+            db_session.add(signer)
+
         db_session.commit()
-        flash("Dodano sygnatariusza", "success")
+        flash("Zapisano dane sygnatariusza", "success")
 
     signers = Signer.query.all()
     return render_template("admin/manage_signers.html", signers=signers)
@@ -69,29 +79,78 @@ def delete_signer(id):
     return redirect(url_for("admin.manage_signers"))
 
 
-# --- STUDENTS ---
 @admin_bp.route("/students", methods=["GET", "POST"])
 @login_required
 def manage_students():
+    faculties = [
+        ("W1", "Wydział Mechaniczny"),
+        ("W2", "Wydział Elektrotechniki, Elektroniki, Informatyki i Automatyki"),
+        ("W3", "Wydział Chemiczny"),
+        ("W4", "Wydział Technologii Materiałów i Wzornictwa Tekstyliów"),
+        ("W5", "Wydział Biotechnologii i Nauk o Żywności"),
+        ("W6", "Wydział Budownictwa, Architektury i Inżynierii Środowiska"),
+        ("W7", "Wydział Fizyki Technicznej, Informatyki i Matematyki Stosowanej"),
+        ("W8", "Wydział Organizacji i Zarządzania"),
+        ("W9", "Wydział Inżynierii Procesowej i Ochrony Środowiska"),
+        ("IFE", "Centrum Kształcenia Międzynarodowego (IFE)"),
+    ]
+
+    departments = [
+        "Programista",
+        "Mechanik",
+        "Kierowca",
+        "Marketing",
+        "Elektronik",
+        "Team Manager",
+    ]
+
     if request.method == "POST":
+        logger.info(
+            f"Received POST request to add/edit student. Form data: {request.form}"
+        )
+
         try:
-            student = Student(
-                name=request.form["name"],
-                index=request.form["index"],
-                major=request.form["major"],
-                gender=request.form["gender"],
-                semester=request.form["semester"],
-                year=request.form["year"],
-                department=request.form["department"],
-            )
-            db_session.add(student)
-            db_session.commit()
-            flash("Dodano studenta", "success")
+            student_id = request.form.get("student_id")
+
+            if student_id:
+                student = Student.query.get(student_id)
+                logger.info(f"Editing existing student ID: {student_id}")
+            else:
+                student = Student()
+                logger.info("Creating new student entry.")
+
+            student.name = request.form.get("name")
+            student.index = request.form.get("index")
+            student.major = request.form.get("major")
+            student.gender = request.form.get("gender")
+            student.faculty = request.form.get("faculty")
+            student.department = request.form.get("department")
+
+            if not student.name or not student.index:
+                logger.warning(
+                    f"Validation failed: Name='{student.name}', Index='{student.index}'"
+                )
+                flash("Imię i Indeks są wymagane.", "danger")
+            else:
+                if not student_id:
+                    db_session.add(student)
+
+                db_session.commit()
+                logger.info(f"Successfully saved student: {student.name}")
+                flash("Zapisano dane studenta", "success")
+
         except Exception as e:
-            flash(f"Błąd: {e}", "danger")
+            db_session.rollback()
+            logger.error("Error occurred while saving student", exc_info=True)
+            flash(f"Błąd systemowy: {str(e)}", "danger")
 
     students = Student.query.all()
-    return render_template("admin/manage_students.html", students=students)
+    return render_template(
+        "admin/manage_students.html",
+        students=students,
+        faculties=faculties,
+        departments=departments,
+    )
 
 
 @admin_bp.route("/delete_student/<int:id>")

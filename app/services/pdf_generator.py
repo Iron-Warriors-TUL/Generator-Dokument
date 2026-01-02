@@ -7,6 +7,15 @@ import unicodedata
 TEMPLATE_DIR = "/app/latex_templates"
 OUTPUT_DIR = "/app/generated"
 
+DEPT_MAPPING = {
+    "Programista": "Programistów",
+    "Mechanik": "Mechaników",
+    "Kierowca": "Kierowców",
+    "Marketing": "Marketingu",
+    "Elektronik": "Elektroników",
+    "Team Manager": "Team Managerów",
+}
+
 
 def safe_filename(text):
     text = str(text)
@@ -28,6 +37,9 @@ def generate_pdf(student_data, template_filename, signers):
     )
 
     context = student_data.copy()
+    context["department"] = DEPT_MAPPING.get(
+        student_data.get("department", ""), student_data.get("department", "")
+    )
     context["timestamp"] = datetime.now().strftime("%d.%m.%Y")
     context["template_path"] = TEMPLATE_DIR
 

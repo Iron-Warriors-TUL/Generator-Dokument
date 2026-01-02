@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2>Zarządzanie Studentami</h2>
-<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addStudentModal">Dodaj Studenta</button>
+<button class="btn btn-primary mb-3" onclick="openAddModal()">Dodaj Studenta</button>
 
 <div class="card shadow">
     <div class="card-body">
@@ -11,18 +11,24 @@
                     <th>Imię</th>
                     <th>Indeks</th>
                     <th>Kierunek</th>
-                    <th>Semestr</th>
+                    <th>Wydział</th>
+                    <th>Dział</th>
                     <th>Akcja</th>
                 </tr>
             </thead>
             <tbody>
                 {% for s in students %}
-                <tr>
+                <tr id="student-row-{{ s.id }}" data-name="{{ s.name }}" data-index="{{ s.index }}"
+                    data-major="{{ s.major }}" data-gender="{{ s.gender }}" data-faculty="{{ s.faculty }}"
+                    data-department="{{ s.department }}">
                     <td>{{ s.name }}</td>
                     <td>{{ s.index }}</td>
                     <td>{{ s.major }}</td>
-                    <td>{{ s.semester }} {{ s.year }}</td>
+                    <td>{{ s.faculty }}</td>
+                    <td>{{ s.department }}</td>
                     <td>
+                        <button class="btn btn-outline-primary btn-sm"
+                            onclick="prepareEdit('{{ s.id }}')">Edytuj</button>
                         <a href="{{ url_for('admin.delete_student', id=s.id) }}" class="btn btn-outline-danger btn-sm"
                             onclick="return confirm('Usunąć studenta?')">Usuń</a>
                     </td>
@@ -33,28 +39,44 @@
     </div>
 </div>
 
-<div class="modal fade" id="addStudentModal" tabindex="-1">
+<div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <form method="POST" class="modal-content">
+        <form method="POST" class="modal-content" id="studentForm">
             <div class="modal-header">
-                <h5 class="modal-title">Nowy Student</h5>
+                <h5 class="modal-title" id="modalTitle">Nowy Student</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <input type="text" name="name" class="form-control mb-2" placeholder="Imię i Nazwisko" required>
-                <input type="text" name="index" class="form-control mb-2" placeholder="Nr Indeksu" required>
-                <input type="text" name="major" class="form-control mb-2" placeholder="Kierunek" required>
-                <input type="text" name="department" class="form-control mb-2" placeholder="Wydział (np. IT)" required>
-                <select name="gender" class="form-select mb-2">
+                <input type="hidden" name="student_id" id="student_id">
+
+                <label class="form-label">Imię i Nazwisko</label>
+                <input type="text" name="name" id="name" class="form-control mb-2" required>
+
+                <label class="form-label">Nr Indeksu</label>
+                <input type="text" name="index" id="index" class="form-control mb-2" required>
+
+                <label class="form-label">Kierunek</label>
+                <input type="text" name="major" id="major" class="form-control mb-2" required>
+
+                <label class="form-label">Płeć</label>
+                <select name="gender" id="gender" class="form-select mb-2">
                     <option value="male">Mężczyzna</option>
                     <option value="female">Kobieta</option>
                 </select>
-                <div class="row">
-                    <div class="col"><input type="text" name="semester" class="form-control"
-                            placeholder="Semestr (np. zimowym)"></div>
-                    <div class="col"><input type="text" name="year" class="form-control"
-                            placeholder="Rok (np. 2024/25)"></div>
-                </div>
+
+                <label class="form-label">Wydział</label>
+                <select name="faculty" id="faculty" class="form-select mb-2" required>
+                    {% for code, full_name in faculties %}
+                    <option value="{{ code }}">{{ full_name }} ({{ code }})</option>
+                    {% endfor %}
+                </select>
+
+                <label class="form-label">Dział w kole</label>
+                <select name="department" id="department" class="form-select mb-2" required>
+                    {% for d in departments %}
+                    <option value="{{ d }}">{{ d }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary">Zapisz</button>
@@ -62,4 +84,36 @@
         </form>
     </div>
 </div>
+
+<script>
+    var studentModalInstance = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var modalEl = document.getElementById('studentModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            studentModalInstance = new bootstrap.Modal(modalEl);
+        }
+    });
+
+    function openAddModal() {
+        document.getElementById('studentForm').reset();
+        document.getElementById('student_id').value = '';
+        document.getElementById('modalTitle').innerText = 'Nowy Student';
+        if (studentModalInstance) studentModalInstance.show();
+    }
+
+    function prepareEdit(id) {
+        var row = document.getElementById('student-row-' + id);
+        document.getElementById('student_id').value = id;
+        document.getElementById('name').value = row.getAttribute('data-name');
+        document.getElementById('index').value = row.getAttribute('data-index');
+        document.getElementById('major').value = row.getAttribute('data-major');
+        document.getElementById('gender').value = row.getAttribute('data-gender');
+        document.getElementById('faculty').value = row.getAttribute('data-faculty');
+        document.getElementById('department').value = row.getAttribute('data-department');
+
+        document.getElementById('modalTitle').innerText = 'Edytuj Studenta';
+        if (studentModalInstance) studentModalInstance.show();
+    }
+</script>
 {% endblock %}

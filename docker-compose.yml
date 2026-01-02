@@ -10,6 +10,7 @@ services:
       - ./app/latex_templates:/app/latex_templates
       - ./app/templates:/app/templates
       - ./generated:/app/generated
+      - ./sqlite.db:/app/sqlite.db
     environment:
       - FLASK_APP=run.py
       - FLASK_DEBUG=1

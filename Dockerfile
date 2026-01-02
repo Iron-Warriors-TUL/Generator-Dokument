@@ -28,4 +28,5 @@ EXPOSE 5000
 
 # 7. Run the application
 # We use host=0.0.0.0 so the container listens to the outside world
+# RUN python create_user.py
 CMD ["flask", "run", "--host=0.0.0.0"]
