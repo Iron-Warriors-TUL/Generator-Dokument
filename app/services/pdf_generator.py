@@ -63,21 +63,39 @@ def generate_pdf(student_data, template_filename, signers):
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     tex_path = os.path.join(OUTPUT_DIR, f"{base_filename}.tex")
+    log_path = os.path.join(OUTPUT_DIR, f"{base_filename}.log")
 
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write(rendered_tex)
 
-    for _ in range(2):
-        subprocess.run(
-            [
-                "pdflatex",
-                "-interaction=nonstopmode",
-                "-output-directory",
-                OUTPUT_DIR,
-                tex_path,
-            ],
-            check=True,
-            stdout=subprocess.DEVNULL,
+    env = os.environ.copy()
+    env["TEXINPUTS"] = f".:{TEMPLATE_DIR}:"
+
+    try:
+        for _ in range(2):
+            subprocess.run(
+                [
+                    "pdflatex",
+                    "-interaction=nonstopmode",
+                    "-output-directory",
+                    OUTPUT_DIR,
+                    tex_path,
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+    except subprocess.CalledProcessError as e:
+        error_details = ""
+        if os.path.exists(log_path):
+            with open(log_path, "r", encoding="utf-8", errors="ignore") as log_file:
+                log_content = log_file.readlines()
+                error_details = "".join(log_content[-20:])
+
+        raise Exception(
+            f"Błąd kompilacji LaTeX:\nSTDOUT: {e.stdout}\nSTDERR: {e.stderr}\n"
+            f"Ostatnie linie logu:\n{error_details}"
         )
 
     return f"{base_filename}.pdf"

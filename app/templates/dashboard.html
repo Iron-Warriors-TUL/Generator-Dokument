@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-
 {% block content %}
 <div class="card shadow">
     <div class="card-header bg-white">
@@ -26,9 +25,7 @@
                     <td>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                             data-bs-target="#generateModal"
-                            onclick="setStudentId('{{ student.id }}', '{{ student.name }}')">
-                            ⚙️ Generuj
-                        </button>
+                            onclick="setStudentId('{{ student.id }}', '{{ student.name }}')">⚙️ Generuj</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -37,70 +34,88 @@
     </div>
 </div>
 
-<div class="modal fade" id="generateModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="generateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <form action="{{ url_for('dashboard.generate_custom') }}" method="POST" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Konfiguracja Wydruku</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
                 <input type="hidden" name="student_id" id="modalStudentId">
-                <p>Generujesz zaświadczenie dla: <strong id="modalStudentName"></strong></p>
+                <p>Dokument dla: <strong id="modalStudentName"></strong></p>
                 <hr>
 
                 <div class="mb-3">
                     <label class="form-label">Wybierz Szablon (.tex)</label>
-                    <select name="template_name" class="form-select" required>
+                    <select name="template_name" id="templateSelect" class="form-select" required
+                        onchange="updateFields()">
                         {% for t in templates %}
-                        <option value="{{ t }}">{{ t }}</option>
+                        <option value="{{ t }}"
+                            data-mode="{{ 'sr' if 'sr' in t.lower() or 'stypendium' in t.lower() else 'default' }}">
+                            {{ t }}
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-4">
-                        <label class="form-label small">Lewy</label>
-                        <select name="signer_left" class="form-select" required>
-                            {% for s in signers %}
-                            <option value="{{ s.id }}">{{ s.name }}</option>
-                            {% endfor %}
-                        </select>
+                <div id="srSection" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Opis działań (treść po nazwie działu)</label>
+                        <textarea name="role_description" class="form-control" rows="2"></textarea>
                     </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label small">Środek</label>
-                        <select name="signer_mid" class="form-select" required>
-                            {% for s in signers %}
-                            <option value="{{ s.id }}">{{ s.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label small">Prawy</label>
-                        <select name="signer_right" class="form-select" required>
-                            {% for s in signers %}
-                            <option value="{{ s.id }}">{{ s.name }}</option>
-                            {% endfor %}
-                        </select>
+                    <div class="mb-3">
+                        <label class="form-label">Osiągnięcia (lista punktowa)</label>
+                        <div id="achievementsContainer">
+                            <div class="input-group mb-2">
+                                <input type="text" name="achievements[]" class="form-control"
+                                    placeholder="Treść osiągnięcia...">
+                                <button type="button" class="btn btn-outline-danger"
+                                    onclick="this.parentElement.remove()">-</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addField()">+ Dodaj
+                            punkt</button>
                     </div>
                 </div>
-            </div>
 
+                <div class="row mt-4">
+                    {% for pos in ['signer_left', 'signer_mid', 'signer_right'] %}
+                    <div class="col-md-4">
+                        <label class="form-label small">{{ loop.index }}. Podpis</label>
+                        <select name="{{ pos }}" class="form-select">
+                            {% for s in signers %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
-                <button type="submit" class="btn btn-success">Pobierz PDF</button>
+                <button type="submit" class="btn btn-success">Generuj PDF</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    function updateFields() {
+        const sel = document.getElementById('templateSelect');
+        const mode = sel.options[sel.selectedIndex].getAttribute('data-mode');
+        document.getElementById('srSection').style.display = (mode === 'sr') ? 'block' : 'none';
+    }
+    function addField() {
+        const container = document.getElementById('achievementsContainer');
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = '<input type="text" name="achievements[]" class="form-control" placeholder="Treść osiągnięcia...">' +
+            '<button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">-</button>';
+        container.appendChild(div);
+    }
     function setStudentId(id, name) {
         document.getElementById('modalStudentId').value = id;
         document.getElementById('modalStudentName').textContent = name;
     }
+    document.addEventListener('DOMContentLoaded', updateFields);
 </script>
 {% endblock %}

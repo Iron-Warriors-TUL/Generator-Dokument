@@ -1,142 +1,21 @@
-\documentclass[a4paper,12pt]{article}
-
-\usepackage{tikz}
-\usepackage{graphicx}
-\usepackage{geometry}
-\usepackage{setspace}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{ragged2e}
-\usepackage{lmodern}
-\usepackage{eso-pic}
-\usepackage{ifthen}
-
-% Load template path for images
-\graphicspath{ {\VAR{template_path}/} }
-
-% Page geometry
-\geometry{
-    a4paper,
-    left=35mm,
-    right=10mm,
-    top=55mm,
-    bottom=30mm,
-    headheight=0pt,
-    headsep=0pt
-}
-
-% Signature Block Definition
-\newcommand{\signature}[2]
-{
-    \begin{minipage}{0.30\textwidth}
-    \centering
-    \vspace{1cm}
-    \dotfill\\[0.2cm]
-    \textbf{#1}\\
-    {\footnotesize #2}\\
-    \end{minipage}
-}
-
-% Gender Logic
-\newcommand{\gender}{male}
-\newcommand{\setgender}[1]{\renewcommand{\gender}{#1}}
-
-\newcommand{\student}{%
-  \ifthenelse{\equal{\gender}{female}}{studentka}{student}%
-}
-
-\newcommand{\was}{%
-  \ifthenelse{\equal{\gender}{female}}{była}{był}%
-}
-
-\newcommand{\activemem}{%
-  \ifthenelse{\equal{\gender}{female}}{aktywną}{aktywnym}%
-}
-
-\newcommand{\memberOne}{%
-    \ifthenelse{\equal{\gender}{female}}{członkinią}{członkiem}%
-}
-
-\newcommand{\memberTwo}{%
-  \ifthenelse{\equal{\gender}{female}}{członkini}{członek}%
-}
-
-\newcommand{\tookpart}{%
-    \ifthenelse{\equal{\gender}{female}}{brała}{brał}%
-}
-
-\newcommand{\dedicated}{%
-    \ifthenelse{\equal{\gender}{female}}{poświęciła}{poświęcił}%
-}
-
-\pagestyle{empty}
-\setlength{\parindent}{0pt}
-
-% --- BACKGROUND STRUCTURE (LOGOS + FOOTER TEXT) ---
-\newcommand\BackgroundStructure{
-    \begin{tikzpicture}[remember picture,overlay]
-        % 1. PŁ Logo (Top Left)
-        \node[anchor=north west] at ([xshift=4mm,yshift=-14mm]current page.north west)
-            {\includegraphics[height=37mm]{media/IMPLOGO.png}};
-        
-        % 2. Left Sidebar Banner
-        \node[anchor=north west] at ([xshift=4mm,yshift=-51.5mm]current page.north west)
-            {\includegraphics[width=24mm,height=250mm]{media/BANERLEWO.jpg}};
-        
-        % 3. Iron Warriors Logo
-        \node[anchor=north west] at ([xshift=4mm,yshift=-232mm]current page.north west)
-            {\includegraphics[width=24mm]{media/IWLOGO.png}};
-            
-        % 4. IMP Logo
-        \node[anchor=north west] at ([xshift=4mm,yshift=-262mm]current page.north west)
-            {\includegraphics[width=24mm]{media/IMP.png}};
-            
-        % 5. Partner Logos (Bottom Right)
-        \node[anchor=south east] at ([xshift=-15mm,yshift=8mm]current page.south east)
-            {\includegraphics[width=90mm]{media/INNI.png}};
-
-        % --- NEW: FOOTER ADDRESS TEXT (Bottom Left) ---
-        \node[anchor=south west, align=left] at ([xshift=38mm,yshift=8mm]current page.south west) 
-        {
-            \fontsize{7}{9}\selectfont \color{black!70} % Small, dark gray font
-            \begin{tabular}{@{}l}
-                ul. Wólczańska 217/221, 93-005 Łódź \\
-                tel. (+48 42) 631 23 64; w1i12@adm.p.lodz.pl \\
-                www.imp.p.lodz.pl \\[1ex] 
-                \textbf{Adres do korespondencji:} \\
-                ul. Żeromskiego 116, 90-924 Łódź
-            \end{tabular}
-        };
-    \end{tikzpicture}
-}
-
-\AddToShipoutPictureBG{\BackgroundStructure}
-
+\input{base.tex}
 \begin{document}
-
-% Set gender from Python variable
 \setgender{\VAR{gender}}
 
-% Date aligned to right
 \begin{flushright}
 Łódź, dnia \VAR{timestamp} r.
 \end{flushright}
 
 \vspace{10mm}
-
-% Title
 \begin{center}
 {\Large\bfseries Zaświadczenie}
 \end{center}
 
 \vspace{10mm}
 \justifying
-Niniejszym zaświadczam, że \VAR{name}, indeks: \VAR{index}, \student{} kierunku \VAR{major} \was{} \activemem{} \memberOne{} Studenckiego Koła Naukowego Iron Warriors w semestrze \VAR{semester} \VAR{year}.
-Jako \memberTwo{} Działu \VAR{department}, \tookpart{} w cotygodniowych zebraniach zespołu, łącznie na prace w zespole \dedicated{} ponad 30 godzin.
+Niniejszym zaświadczam, że \VAR{name}, indeks: \VAR{index}, \student{} kierunku \VAR{major} \was{} \activemem{} \memberOne{} Studenckiego Koła Naukowego Iron Warriors w semestrze \VAR{semester} \VAR{year}. Jako \memberTwo{} Działu \VAR{department}, \tookpart{} w cotygodniowych zebraniach zespołu, łącznie na prace w zespole \dedicated{} ponad 30 godzin.
 
 \vspace{30mm}
-
-% Three Signatures Row
 \noindent
 \signature{\VAR{signer_left_name}}{\VAR{signer_left_role}}%
 \hfill

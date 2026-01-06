@@ -12,14 +12,16 @@ dashboard_bp = Blueprint("dashboard", __name__)
 def index():
     students = Student.query.all()
     signers = Signer.query.all()
-
     template_dir = os.path.join(current_app.root_path, "latex_templates")
-
     try:
-        templates = [f for f in os.listdir(template_dir) if f.endswith(".tex")]
+        # Pobieramy szablony, ignorując plik bazowy
+        templates = [
+            f
+            for f in os.listdir(template_dir)
+            if f.endswith(".tex") and f != "base.tex"
+        ]
     except FileNotFoundError:
         templates = []
-
     return render_template(
         "dashboard.html", students=students, signers=signers, templates=templates
     )
@@ -31,6 +33,10 @@ def generate_custom():
     student_id = request.form.get("student_id")
     template_name = request.form.get("template_name")
 
+    role_description = request.form.get("role_description", "")
+    achievements_list = request.form.getlist("achievements[]")
+    achievements_list = [a.strip() for a in achievements_list if a.strip()]
+
     signer_ids = [
         request.form.get("signer_left"),
         request.form.get("signer_mid"),
@@ -38,7 +44,6 @@ def generate_custom():
     ]
 
     student = Student.query.get(student_id)
-
     selected_signers = []
     for sid in signer_ids:
         signer = Signer.query.get(sid)
@@ -46,10 +51,14 @@ def generate_custom():
             selected_signers.append(signer.to_dict())
 
     if not student or len(selected_signers) != 3:
-        return "Błąd: Nie znaleziono danych.", 404
+        return "Błąd: Nie znaleziono danych studenta lub sygnatariuszy.", 404
 
     try:
-        filename = generate_pdf(student.to_dict(), template_name, selected_signers)
+        context = student.to_dict()
+        context["role_description"] = role_description
+        context["achievements"] = achievements_list
+
+        filename = generate_pdf(context, template_name, selected_signers)
         return send_file(os.path.join(OUTPUT_DIR, filename), as_attachment=True)
     except Exception as e:
         return str(e), 500

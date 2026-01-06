@@ -1,0 +1,39 @@
+\input{base.tex}
+\begin{document}
+\setgender{\VAR{gender}}
+
+\begin{flushright}
+Łódź, dnia \VAR{timestamp} r.
+\end{flushright}
+
+\vspace{10mm}
+\begin{center}
+{\Large\bfseries Zaświadczenie}
+\end{center}
+
+\vspace{10mm}
+\justifying
+% Używamy \ifthenelse aby wstawić Pan lub Pani przed nazwiskiem
+Niniejszym zaświadczam, że \ifthenelse{\equal{\gender}{female}}{Pani}{Pan} \textbf{\VAR{name}}, \student{} kierunku \VAR{major}, nr albumu \VAR{index}, w semestrze \VAR{semester} roku akademickiego \VAR{year} \was{} \activemem{} członkiem Studenckiego Koła Naukowego Iron Warriors.
+
+Przez ten czas \ifthenelse{\equal{\gender}{female}}{Pani}{Pan} \VAR{name} \tookpart{} czynny udział w cotygodniowych spotkaniach projektu oraz pełnił/pełniła funkcję \memberTwo{} Działu \VAR{department} \BLOCK{if role_description} -- \VAR{role_description} \BLOCK{endif}. Jednocześnie zaświadczam, że SKN Iron Warriors jest projektem o charakterze uczelnianym.
+
+\vspace{5mm}
+\BLOCK{if achievements}
+W tym czasie \ifthenelse{\equal{\gender}{female}}{Pani}{Pan} \VAR{name}:
+\begin{itemize}
+    \BLOCK{for achievement in achievements}
+    \item \VAR{achievement}
+    \BLOCK{endfor}
+\end{itemize}
+\BLOCK{endif}
+
+\vspace{20mm}
+\noindent
+\signature{\VAR{signer_left_name}}{\VAR{signer_left_role}}
+\hfill
+\signature{\VAR{signer_mid_name}}{\VAR{signer_mid_role}}
+\hfill
+\signature{\VAR{signer_right_name}}{\VAR{signer_right_role}}
+
+\end{document}
