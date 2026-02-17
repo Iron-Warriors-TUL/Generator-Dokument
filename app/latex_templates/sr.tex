@@ -16,7 +16,9 @@
 % Używamy \ifthenelse aby wstawić Pan lub Pani przed nazwiskiem
 Niniejszym zaświadczam, że \ifthenelse{\equal{\gender}{female}}{Pani}{Pan} \textbf{\VAR{name}}, \student{} kierunku \VAR{major}, nr albumu \VAR{index}, w semestrze \VAR{semester} roku akademickiego \VAR{year} \was{} \activemem{} członkiem Studenckiego Koła Naukowego Iron Warriors.
 
-Przez ten czas \ifthenelse{\equal{\gender}{female}}{Pani}{Pan} \VAR{name} \tookpart{} czynny udział w cotygodniowych spotkaniach projektu oraz pełnił/pełniła funkcję \memberTwo{} Działu \VAR{department} \BLOCK{if role_description} -- \VAR{role_description} \BLOCK{endif}. Jednocześnie zaświadczam, że SKN Iron Warriors jest projektem o charakterze uczelnianym.
+Przez ten czas \ifthenelse{\equal{\gender}{female}}{Pani}{Pan} \VAR{name} \tookpart{} czynny udział w cotygodniowych spotkaniach projektu oraz \ifthenelse{\equal{\gender}{female}}{pełniła}{pełnił} funkcję \memberTwo{} Działu \VAR{department} \BLOCK{if role_description} -- \VAR{role_description} \BLOCK{endif}
+
+Jednocześnie zaświadczam, że SKN Iron Warriors jest projektem o charakterze uczelnianym.
 
 \vspace{5mm}
 \BLOCK{if achievements}

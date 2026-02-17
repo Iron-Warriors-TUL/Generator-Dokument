@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app.database import db_session
 from app.models import User, Student, Signer
+from app.services.excel_importer import import_students_from_excel
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -160,4 +161,22 @@ def delete_student(id):
     if item:
         db_session.delete(item)
         db_session.commit()
+    return redirect(url_for("admin.manage_students"))
+
+
+@admin_bp.route("/students/import", methods=["POST"])
+@login_required
+def import_students():
+    if "file" not in request.files:
+        flash("Nie wybrano pliku", "warning")
+        return redirect(url_for("admin.manage_students"))
+
+    file = request.files["file"]
+
+    if file.filename == "" or not file.filename.endswith(".xlsx"):
+        flash("Wymagany plik .xlsx", "danger")
+        return redirect(url_for("admin.manage_students"))
+
+    success, message = import_students_from_excel(file)
+    flash(message, "success" if success else "danger")
     return redirect(url_for("admin.manage_students"))

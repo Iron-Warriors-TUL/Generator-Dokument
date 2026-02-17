@@ -1,7 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2>Zarządzanie Studentami</h2>
-<button class="btn btn-primary mb-3" onclick="openAddModal()">Dodaj Studenta</button>
+
+<div class="mb-3">
+    <button class="btn btn-primary" onclick="openAddModal()">Dodaj Studenta</button>
+
+    <button class="btn btn-success" onclick="document.getElementById('importFile').click()">
+        <i class="bi bi-file-earmark-excel"></i> Importuj z Excel (.xlsx)
+    </button>
+</div>
+
+<form id="importForm" action="{{ url_for('admin.import_students') }}" method="POST" enctype="multipart/form-data"
+    style="display: none;">
+    <input type="file" name="file" id="importFile" accept=".xlsx"
+        onchange="document.getElementById('importForm').submit()">
+</form>
 
 <div class="card shadow">
     <div class="card-body">
