@@ -31,3 +31,29 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("auth.login"))
+
+
+@auth_bp.route("/login/ms")
+def login_ms():
+    redirect_uri = url_for("auth.authorize_ms", _external=True)
+    return oauth.microsoft.authorize_redirect(redirect_uri)
+
+
+@auth_bp.route("/authorize/ms")
+def authorize_ms():
+    token = oauth.microsoft.authorize_access_token()
+    user_info = token.get("userinfo")
+
+    if not user_info:
+        flash("Błąd autoryzacji Microsoft.", "danger")
+        return redirect(url_for("auth.login"))
+    user = User.query.filter_by(username=user_info["email"]).first()
+    if not user:
+        flash(
+            "Użytkownik nie istnieje w systemie. Skontaktuj się z administratorem.",
+            "warning",
+        )
+        return redirect(url_for("auth.login"))
+
+    login_user(user)
+    return redirect(url_for("dashboard.index"))
